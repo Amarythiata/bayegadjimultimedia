@@ -1,0 +1,55 @@
+@import "tailwindcss";
+
+:root {
+  /* Fond crème, pas de blanc pur - identité "sobre et chaleureuse" */
+  --background: #f7f5ee;
+  --foreground: #1a2118;
+
+  /* Vert forêt - header, sidebar back-office, footer
+     Émeraude profond plutôt que kaki sombre — plus riche, moins terne. */
+  --forest-50: #eef4f0;
+  --forest-100: #cfe0d5;
+  --forest-400: #33795a;
+  --forest-600: #1b4a37;
+  --forest-800: #123726;
+  --forest-900: #0a2318;
+
+  /* Or/ambre - CTA principal, accents */
+  --gold-100: #f9e8c8;
+  --gold-400: #d99a2b;
+  --gold-600: #b87c14;
+  --gold-800: #6b4808;
+
+  /* Rouge - badge EN DIRECT uniquement, signal d'urgence */
+  --live-500: #d13b34;
+  --live-600: #a92a24;
+
+  --card-bg: #ffffff;
+  --border-subtle: #e4e0d4;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-forest-50: var(--forest-50);
+  --color-forest-100: var(--forest-100);
+  --color-forest-400: var(--forest-400);
+  --color-forest-600: var(--forest-600);
+  --color-forest-800: var(--forest-800);
+  --color-forest-900: var(--forest-900);
+  --color-gold-100: var(--gold-100);
+  --color-gold-400: var(--gold-400);
+  --color-gold-600: var(--gold-600);
+  --color-gold-800: var(--gold-800);
+  --color-live-500: var(--live-500);
+  --color-live-600: var(--live-600);
+  --color-card-bg: var(--card-bg);
+  --color-border-subtle: var(--border-subtle);
+  --font-sans: var(--font-inter);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+}
