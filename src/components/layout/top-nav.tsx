@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { PlayCircle } from "lucide-react";
+import { useLiveStatus } from "@/lib/use-live-status";
 
 // « Accueil » est volontairement absent : le logo y mène, comme partout ailleurs
 // sur le web. « À propos » et « Contact », consultés une fois et non à chaque
@@ -17,6 +18,7 @@ const links = [
 
 export function TopNav() {
   const pathname = usePathname();
+  const isLive = useLiveStatus();
 
   return (
     // Hauteur fixée à 3.5rem : la barre latérale du back-office s'y adosse
@@ -54,14 +56,29 @@ export function TopNav() {
           })}
 
           {/* Écouter le direct est l'action la plus recherchée : elle se
-              distingue au lieu de se fondre parmi les autres liens. */}
+              distingue au lieu de se fondre parmi les autres liens. Le rouge
+              est réservé au signal « en direct » par la charte du projet. */}
           <Link
             href="/direct"
             aria-current={pathname.startsWith("/direct") ? "page" : undefined}
-            className="ml-3 flex items-center gap-1.5 rounded-full bg-gold-400 px-4 py-1.5 text-sm font-medium text-forest-900 transition-all duration-200 hover:brightness-105 active:scale-[0.98]"
+            className={`ml-3 flex items-center gap-2 rounded-full px-4 py-1.5 text-sm font-medium transition-all duration-200 hover:brightness-105 active:scale-[0.98] ${
+              isLive ? "bg-live-500 text-white" : "bg-gold-400 text-forest-900"
+            }`}
           >
-            <PlayCircle size={15} />
-            Direct
+            {isLive ? (
+              <>
+                <span className="relative flex h-2 w-2">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-75" />
+                  <span className="relative inline-flex h-2 w-2 rounded-full bg-white" />
+                </span>
+                En direct
+              </>
+            ) : (
+              <>
+                <PlayCircle size={15} />
+                Direct
+              </>
+            )}
           </Link>
         </nav>
       </div>

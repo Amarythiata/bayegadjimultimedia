@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Home, Radio, Headphones, Newspaper, Image as ImageIcon, MoreHorizontal } from "lucide-react";
+import { useLiveStatus } from "@/lib/use-live-status";
 
 const items = [
   { href: "/", label: "Accueil", icon: Home },
@@ -15,6 +16,7 @@ const items = [
 
 export function BottomNav() {
   const pathname = usePathname();
+  const isLive = useLiveStatus();
 
   return (
     <nav
@@ -32,7 +34,15 @@ export function BottomNav() {
               active ? "text-forest-800" : "text-forest-400"
             }`}
           >
-            <Icon size={20} strokeWidth={active ? 2.2 : 1.8} />
+            <span className="relative">
+              <Icon size={20} strokeWidth={active ? 2.2 : 1.8} />
+              {href === "/direct" && isLive && (
+                <span className="absolute -right-1 -top-0.5 flex h-2 w-2">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-live-500 opacity-75" />
+                  <span className="relative inline-flex h-2 w-2 rounded-full bg-live-500" />
+                </span>
+              )}
+            </span>
             {label}
           </Link>
         );
