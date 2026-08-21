@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { ShareButton } from "@/components/ui/share-button";
 import type { MediaRow } from "@/lib/types/database";
 
 const categoryLabels: Record<MediaRow["category"], string> = {
@@ -77,6 +78,10 @@ export default async function MediaDetailPage({
             </audio>
           </div>
         )}
+      </div>
+
+      <div className="mt-4 flex justify-end">
+        <ShareButton title={media.title} />
       </div>
 
       <p className="mt-4 text-sm leading-relaxed text-forest-800">{media.description}</p>

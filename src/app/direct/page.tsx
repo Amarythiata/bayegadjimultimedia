@@ -5,6 +5,7 @@ import { LiveBadge } from "@/components/ui/live-badge";
 import { LivePlayer } from "@/components/live/live-player";
 import { LiveChat } from "@/components/live/live-chat";
 import { LiveCountdown } from "@/components/live/live-countdown";
+import { ShareButton } from "@/components/ui/share-button";
 import { YOUTUBE_LIVE_STREAMS_URL } from "@/lib/youtube";
 import { formatEventDate, formatEventTime } from "@/lib/dates";
 import type { LiveEventRow } from "@/lib/types/database";
@@ -125,6 +126,10 @@ export default async function DirectPage() {
               <p className="mt-1 text-sm text-forest-400">{current.description}</p>
             )}
             <LivePlayer live={current} />
+
+            <div className="mt-4">
+              <ShareButton title={`En direct : ${current.title}`} />
+            </div>
           </div>
 
           <aside className="flex flex-col rounded-2xl border border-border-subtle bg-card-bg">
@@ -159,6 +164,12 @@ export default async function DirectPage() {
           </p>
 
           <LiveCountdown scheduledStart={next.scheduled_start} />
+
+          {/* Annoncer une session à venir est le moment le plus utile pour
+              partager : c'est ainsi qu'on rassemble une audience. */}
+          <div className="mt-5">
+            <ShareButton title={`${next.title} — retransmission en direct`} />
+          </div>
         </div>
       ) : (
         <div className="mt-4 rounded-2xl border border-border-subtle bg-card-bg p-6 text-center md:p-10">
