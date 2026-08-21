@@ -6,8 +6,8 @@ export default function AProposPage() {
       <section className="mt-6">
         <h2 className="text-sm font-medium text-forest-900">Qui sommes-nous</h2>
         <p className="mt-2 text-sm leading-relaxed text-forest-800">
-          [Texte à remplacer — présentation du dahira Bayegadji : origine, rattachement à la
-          tariqa, ville/région d&apos;implantation.]
+          [Texte à remplacer — présentation du dahira Ansaroudine Linguère : origine,
+          rattachement à la tariqa, ville/région d&apos;implantation.]
         </p>
       </section>
 

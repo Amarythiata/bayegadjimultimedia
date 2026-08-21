@@ -24,9 +24,9 @@ export function HomeFooter() {
           <div>
             <div className="flex items-center gap-2 text-gold-100">
               <span className="flex h-8 w-8 items-center justify-center rounded bg-gold-400 text-xs font-semibold text-forest-900">
-                BG
+                AL
               </span>
-              <span className="text-sm font-medium">Bayegadji Multimédia</span>
+              <span className="text-sm font-medium">Ansaroudine Linguère</span>
             </div>
             <h2 className="mt-6 max-w-md text-2xl font-medium tracking-tight md:text-3xl">
               Une question, une suggestion&nbsp;? Restons en contact.
@@ -55,7 +55,7 @@ export function HomeFooter() {
         </Reveal>
 
         <p className="mt-10 text-xs text-forest-100/40">
-          © {new Date().getFullYear()} Bayegadji Multimédia — Dahira Bayegadji.
+          © {new Date().getFullYear()} Dahira Ansaroudine Linguère.
         </p>
       </div>
     </section>

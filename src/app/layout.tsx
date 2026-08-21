@@ -10,9 +10,9 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Bayegadji Multimédia",
+  title: "Ansaroudine Linguère",
   description:
-    "Actualités, directs vidéo et radio, médiathèque et articles du dahira Bayegadji.",
+    "Actualités, directs vidéo et radio, médiathèque et articles du dahira Ansaroudine Linguère.",
 };
 
 export default function RootLayout({
