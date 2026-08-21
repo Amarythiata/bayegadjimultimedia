@@ -38,7 +38,7 @@ export default async function BackOfficeLayout({
     // Pas de conteneur centré ici : la barre latérale doit toucher le bord
     // gauche de l'écran. C'est le contenu seul qui est borné en largeur.
     <div className="flex flex-col md:min-h-[calc(100vh-3.5rem)] md:flex-row">
-      <aside className="flex shrink-0 flex-col justify-between border-b border-forest-900/40 bg-forest-800 px-3 py-4 md:sticky md:top-0 md:h-[calc(100vh-3.5rem)] md:w-60 md:border-b-0 md:border-r md:px-4 md:py-6">
+      <aside className="flex shrink-0 flex-col justify-between border-b border-forest-900/40 bg-forest-800 px-3 py-4 md:sticky md:top-14 md:h-[calc(100vh-3.5rem)] md:w-60 md:border-b-0 md:border-r md:px-4 md:py-6">
         <nav className="flex gap-1 overflow-x-auto md:flex-col md:overflow-visible">
           {navItems.map(({ href, label, icon: Icon }) => (
             <Link

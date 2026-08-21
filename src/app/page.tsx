@@ -4,7 +4,6 @@ import { StatsBand, type HomeStats } from "@/components/home/stats-band";
 import { FeaturedContent } from "@/components/home/featured-content";
 import { MediaShowcase } from "@/components/home/media-showcase";
 import { RadioCalendarBand } from "@/components/home/radio-calendar-band";
-import { HomeFooter } from "@/components/home/home-footer";
 import type { ArticleRow, LiveEventRow, MediaRow, NewsRow } from "@/lib/types/database";
 
 async function getHomeData() {
@@ -98,7 +97,6 @@ export default async function HomePage() {
       <FeaturedContent featured={featured ?? null} news={restNews} articles={articles} />
       <MediaShowcase medias={medias} />
       <RadioCalendarBand upcoming={upcomingEvents} />
-      <HomeFooter />
     </>
   );
 }
