@@ -20,8 +20,25 @@ export function MediaCard({ media }: { media: MediaRow }) {
       href={`/medias/${media.slug}`}
       className="flex gap-3 rounded-xl border border-border-subtle bg-card-bg p-3"
     >
-      <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-lg bg-forest-100 text-forest-600">
-        {media.media_type === "video" ? <Video size={20} /> : <Radio size={20} />}
+      <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-forest-100">
+        {media.cover_image_url ? (
+          <>
+            {/* eslint-disable-next-line @next/next/no-img-element -- vignette YouTube ou URL libre saisie par un admin */}
+            <img
+              src={media.cover_image_url}
+              alt=""
+              className="h-full w-full object-cover"
+              loading="lazy"
+            />
+            <span className="absolute inset-0 flex items-center justify-center bg-forest-900/25 text-white">
+              {media.media_type === "video" ? <Video size={18} /> : <Radio size={18} />}
+            </span>
+          </>
+        ) : (
+          <span className="flex h-full w-full items-center justify-center text-forest-600">
+            {media.media_type === "video" ? <Video size={20} /> : <Radio size={20} />}
+          </span>
+        )}
       </div>
       <div className="min-w-0">
         <p className="text-[11px] font-medium uppercase tracking-wide text-gold-600">

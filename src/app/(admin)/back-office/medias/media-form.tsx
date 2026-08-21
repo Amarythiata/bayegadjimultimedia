@@ -85,24 +85,32 @@ export function MediaForm({ media, action }: { media?: MediaRow; action: Action 
       </div>
 
       <label className="text-sm text-forest-800">
-        URL du média (embed vidéo ou fichier audio)
+        Lien de la vidéo ou du fichier audio
         <input
           type="url"
           name="media_url"
           required
           defaultValue={media?.media_url}
+          placeholder="https://www.youtube.com/watch?v=..."
           className="mt-1 w-full rounded-lg border border-border-subtle bg-card-bg px-3 py-2 text-sm"
         />
+        <span className="mt-1 block text-xs font-normal text-forest-400">
+          Colle simplement le lien YouTube tel qu&apos;il apparaît dans ton navigateur — la
+          conversion est automatique.
+        </span>
       </label>
 
       <label className="text-sm text-forest-800">
-        Image de couverture (URL, optionnel)
+        Image de couverture (optionnel)
         <input
           type="url"
           name="cover_image_url"
           defaultValue={media?.cover_image_url ?? ""}
           className="mt-1 w-full rounded-lg border border-border-subtle bg-card-bg px-3 py-2 text-sm"
         />
+        <span className="mt-1 block text-xs font-normal text-forest-400">
+          Laisse vide pour une vidéo YouTube : sa vignette sera reprise automatiquement.
+        </span>
       </label>
 
       <label className="text-sm text-forest-800">

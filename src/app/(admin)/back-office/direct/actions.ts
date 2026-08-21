@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { toYouTubeEmbedUrl } from "@/lib/youtube";
 import type { LiveStatus, LiveType } from "@/lib/types/database";
 
 function readLiveForm(formData: FormData) {
@@ -18,7 +19,9 @@ function readLiveForm(formData: FormData) {
     title,
     description: description || null,
     live_type: liveType,
-    video_embed_url: videoEmbedUrl || null,
+    // Même conversion que pour la médiathèque : un lien `watch?v=` collé
+    // depuis le navigateur produirait un lecteur vide.
+    video_embed_url: videoEmbedUrl ? toYouTubeEmbedUrl(videoEmbedUrl) : null,
     radio_stream_url: radioStreamUrl || null,
     scheduled_start: scheduledStartLocal ? new Date(scheduledStartLocal).toISOString() : "",
     status,

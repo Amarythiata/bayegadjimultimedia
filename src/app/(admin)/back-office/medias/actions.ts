@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { slugify } from "@/lib/utils";
+import { toYouTubeEmbedUrl, youTubeThumbnail } from "@/lib/youtube";
 import type { MediaCategory, LiveType, PublicationStatus } from "@/lib/types/database";
 
 function readMediaForm(formData: FormData) {
@@ -11,10 +12,15 @@ function readMediaForm(formData: FormData) {
   const slugInput = String(formData.get("slug") ?? "").trim();
   const description = String(formData.get("description") ?? "").trim();
   const mediaType = String(formData.get("media_type") ?? "video") as LiveType;
-  const mediaUrl = String(formData.get("media_url") ?? "").trim();
+  const rawUrl = String(formData.get("media_url") ?? "").trim();
   const coverImageUrl = String(formData.get("cover_image_url") ?? "").trim();
   const category = String(formData.get("category") ?? "") as MediaCategory;
   const status = String(formData.get("status") ?? "brouillon") as PublicationStatus;
+
+  // On accepte n'importe quelle forme d'URL YouTube et on la convertit :
+  // coller le lien de la barre d'adresse produirait sinon un lecteur vide,
+  // YouTube refusant l'intégration des URL `watch?v=`.
+  const mediaUrl = mediaType === "video" ? toYouTubeEmbedUrl(rawUrl) : rawUrl;
 
   return {
     title,
@@ -22,7 +28,9 @@ function readMediaForm(formData: FormData) {
     description,
     media_type: mediaType,
     media_url: mediaUrl,
-    cover_image_url: coverImageUrl || null,
+    // À défaut de vignette fournie, on reprend celle de YouTube plutôt que
+    // d'afficher un simple aplat de couleur dans la médiathèque.
+    cover_image_url: coverImageUrl || youTubeThumbnail(rawUrl),
     category,
     status,
   };
