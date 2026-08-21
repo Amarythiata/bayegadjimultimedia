@@ -6,6 +6,7 @@ import { LivePlayer } from "@/components/live/live-player";
 import { LiveChat } from "@/components/live/live-chat";
 import { LiveCountdown } from "@/components/live/live-countdown";
 import { YOUTUBE_LIVE_STREAMS_URL } from "@/lib/youtube";
+import { formatEventDate, formatEventTime } from "@/lib/dates";
 import type { LiveEventRow } from "@/lib/types/database";
 
 async function getLiveState(): Promise<{
@@ -36,18 +37,6 @@ async function getLiveState(): Promise<{
   }
 }
 
-function formatFullDate(iso: string) {
-  return new Date(iso).toLocaleDateString("fr-FR", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
-}
-
-function formatTime(iso: string) {
-  return new Date(iso).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
-}
 
 /** Comment suivre une retransmission — affiché quand aucun direct n'est en cours. */
 function AccessSteps() {
@@ -164,8 +153,8 @@ export default async function DirectPage() {
           )}
 
           <p className="mt-3 text-sm text-forest-800">
-            <span className="capitalize">{formatFullDate(next.scheduled_start)}</span> à{" "}
-            {formatTime(next.scheduled_start)}
+            <span className="capitalize">{formatEventDate(next.scheduled_start)}</span> à{" "}
+            {formatEventTime(next.scheduled_start)}
             <span className="text-forest-400"> (heure de Dakar)</span>
           </p>
 

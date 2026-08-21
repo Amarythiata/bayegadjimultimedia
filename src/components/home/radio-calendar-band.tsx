@@ -3,16 +3,9 @@
 import Link from "next/link";
 import { Headphones, CalendarDays, Video, Radio as RadioIcon, ArrowRight } from "lucide-react";
 import { Reveal } from "./reveal";
+import { formatEventParts } from "@/lib/dates";
 import type { LiveEventRow } from "@/lib/types/database";
 
-function formatEventDate(iso: string) {
-  const d = new Date(iso);
-  return {
-    day: d.toLocaleDateString("fr-FR", { day: "2-digit" }),
-    month: d.toLocaleDateString("fr-FR", { month: "short" }),
-    time: d.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" }),
-  };
-}
 
 export function RadioCalendarBand({ upcoming }: { upcoming: LiveEventRow[] }) {
   return (
@@ -58,7 +51,7 @@ export function RadioCalendarBand({ upcoming }: { upcoming: LiveEventRow[] }) {
               {upcoming.length > 0 ? (
                 <div className="flex flex-col divide-y divide-border-subtle">
                   {upcoming.map((e) => {
-                    const { day, month, time } = formatEventDate(e.scheduled_start);
+                    const { day, month, time } = formatEventParts(e.scheduled_start);
                     return (
                       <div key={e.id} className="flex items-center gap-4 py-3 first:pt-0">
                         <div className="flex w-12 shrink-0 flex-col items-center rounded-xl bg-forest-50 py-1.5">

@@ -1,6 +1,7 @@
 import { Video, Radio } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { LiveBadge } from "@/components/ui/live-badge";
+import { formatEventDateTime } from "@/lib/dates";
 import type { LiveEventRow } from "@/lib/types/database";
 
 async function getEvents() {
@@ -14,16 +15,6 @@ async function getEvents() {
   } catch {
     return [];
   }
-}
-
-function formatDateTime(iso: string) {
-  return new Date(iso).toLocaleString("fr-FR", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
 }
 
 function EventCard({ event }: { event: LiveEventRow }) {
@@ -49,7 +40,7 @@ function EventCard({ event }: { event: LiveEventRow }) {
       </div>
 
       <p className="mt-2 text-sm font-medium capitalize text-forest-900">
-        {formatDateTime(event.scheduled_start)}
+        {formatEventDateTime(event.scheduled_start)}
       </p>
       <p className="mt-0.5 text-base font-medium text-forest-900">{event.title}</p>
       {event.description && (
