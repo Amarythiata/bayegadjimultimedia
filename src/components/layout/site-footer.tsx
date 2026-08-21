@@ -47,9 +47,9 @@ export function SiteFooter() {
     <footer className="relative overflow-hidden bg-forest-900 text-white">
       <div className="pointer-events-none absolute -bottom-24 left-1/2 h-72 w-[36rem] -translate-x-1/2 rounded-full bg-gold-400/10 blur-[100px]" />
 
-      {/* Volontairement compact : sur une page courte, un pied de page trop
-          haut occupe la moitié de l'écran et écrase le contenu. */}
-      <div className="relative mx-auto max-w-6xl px-4 py-10 md:px-6 md:py-12">
+      {/* pb généreux sur mobile : la barre d'onglets est fixée par-dessus et
+          masquerait sinon la mention de bas de page. */}
+      <div className="relative mx-auto max-w-6xl px-4 pb-24 pt-8 sm:pb-10 sm:pt-10 md:px-6 md:py-12">
         <div className="flex flex-col gap-8 md:flex-row md:justify-between md:gap-12">
           <div className="max-w-xs">
             <div className="flex items-center gap-2.5">
@@ -60,12 +60,12 @@ export function SiteFooter() {
                 Ansaroudine Linguère
               </span>
             </div>
-            <p className="mt-3 text-sm leading-relaxed text-forest-100/70">
+            <p className="mt-3 hidden text-sm leading-relaxed text-forest-100/70 sm:block">
               Directs, actualités et médiathèque du dahira — partout dans le monde.
             </p>
             <Link
               href="/contact"
-              className="group mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-gold-400 transition-colors hover:text-gold-100"
+              className="group mt-3 inline-flex items-center gap-1.5 text-sm font-medium text-gold-400 transition-colors hover:text-gold-100 sm:mt-4"
             >
               Nous contacter
               <ArrowRight
@@ -75,7 +75,10 @@ export function SiteFooter() {
             </Link>
           </div>
 
-          <nav className="grid grid-cols-2 gap-x-8 gap-y-6 sm:grid-cols-4 md:gap-x-12">
+          {/* Masqué sur mobile : la barre d'onglets et la page « Plus »
+              couvrent déjà toutes ces destinations. Les répéter allongerait
+              la page sans rien apporter. */}
+          <nav className="hidden gap-x-8 gap-y-6 sm:grid sm:grid-cols-4 md:gap-x-12">
             {groups.map((group) => (
               <div key={group.title}>
                 <p className="text-xs font-medium uppercase tracking-widest text-gold-400">
@@ -98,7 +101,7 @@ export function SiteFooter() {
           </nav>
         </div>
 
-        <p className="mt-8 border-t border-white/10 pt-6 text-xs text-forest-100/40">
+        <p className="mt-6 border-t border-white/10 pt-5 text-xs text-forest-100/40 sm:mt-8 sm:pt-6">
           © {new Date().getFullYear()} Dahira Ansaroudine Linguère.
         </p>
       </div>
