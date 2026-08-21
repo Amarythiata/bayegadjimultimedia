@@ -92,7 +92,9 @@ export function FeaturedContent({
             href={`/actualites/${featured.slug}`}
             className="group relative block overflow-hidden rounded-3xl bg-forest-900 shadow-[0_20px_60px_-15px_rgba(13,26,8,0.5)] transition-shadow duration-500 hover:shadow-[0_25px_70px_-10px_rgba(13,26,8,0.6)]"
           >
-            <div className="relative aspect-[16/9] w-full md:aspect-[21/9]">
+            {/* Hauteur dictée par le contenu, avec un minimum : un ratio figé
+                rognait le badge dès que le titre passait sur deux lignes. */}
+            <div className="relative w-full">
               {featured.cover_image_url ? (
                 // eslint-disable-next-line @next/next/no-img-element -- URL libre saisie par un admin
                 <img
@@ -104,7 +106,7 @@ export function FeaturedContent({
                 <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,_rgba(217,154,43,0.25),transparent_55%),radial-gradient(ellipse_at_bottom_right,_rgba(74,107,65,0.4),transparent_55%)]" />
               )}
               <div className="absolute inset-0 bg-gradient-to-t from-forest-900 via-forest-900/40 to-transparent" />
-              <div className="absolute inset-0 flex flex-col justify-end gap-3 p-6 md:p-10">
+              <div className="relative flex min-h-[19rem] flex-col justify-end gap-3 p-6 md:min-h-[26rem] md:p-10">
                 <p className="w-fit rounded-full bg-gold-400 px-3 py-1 text-[11px] font-medium uppercase tracking-wide text-forest-900">
                   {newsCategoryLabels[featured.category]}
                 </p>

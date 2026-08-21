@@ -22,6 +22,15 @@ export function Hero({ live }: { live: LiveEventRow | null }) {
 
   useEffect(() => {
     if (!videoRef.current) return;
+
+    // React n'émet pas toujours l'attribut `muted` dans le HTML rendu, et iOS
+    // refuse l'autoplay d'une vidéo qu'il ne considère pas muette. On le force
+    // avant de tenter la lecture.
+    videoRef.current.muted = true;
+    // La lecture peut être refusée (mode économie d'énergie, préférence
+    // système). L'affiche reste alors visible : c'est un repli acceptable.
+    void videoRef.current.play().catch(() => {});
+
     const tween = gsap.fromTo(
       videoRef.current,
       { scale: 1 },
@@ -51,12 +60,14 @@ export function Hero({ live }: { live: LiveEventRow | null }) {
             muted
             loop
             playsInline
+            preload="auto"
             poster="/hero-mosquee.jpg"
+            // `src` directement sur l'élément plutôt qu'un <source> enfant :
+            // Safari iOS déclenche l'autoplay plus fiablement ainsi.
+            src="/hero-video-test.mp4"
             className="h-full w-full scale-100 object-cover"
             style={{ willChange: "transform" }}
-          >
-            <source src="/hero-video-test.mp4" type="video/mp4" />
-          </video>
+          />
         </motion.div>
         <div className="absolute inset-0 bg-forest-900/55" />
         <div className="absolute inset-0 bg-gradient-to-r from-forest-900/95 via-forest-900/55 to-forest-900/20" />
