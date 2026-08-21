@@ -10,10 +10,35 @@ const inter = Inter({
   subsets: ["latin"],
 });
 
+const SITE_URL = "https://ansaroudinelinguere.com";
+const SITE_NAME = "Ansaroudine Linguère";
+const SITE_DESCRIPTION =
+  "Directs vidéo et radio, actualités, médiathèque et articles du dahira Ansaroudine Linguère — où que vous soyez dans le monde.";
+
 export const metadata: Metadata = {
-  title: "Ansaroudine Linguère",
-  description:
-    "Actualités, directs vidéo et radio, médiathèque et articles du dahira Ansaroudine Linguère.",
+  // Indispensable pour que les images d'aperçu soient servies en URL absolue :
+  // WhatsApp et Facebook rejettent les chemins relatifs.
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: SITE_NAME,
+    // Les pages de détail n'indiquent que leur propre titre ; le nom du site
+    // est ajouté ici pour que l'aperçu partagé reste identifiable.
+    template: `%s — ${SITE_NAME}`,
+  },
+  description: SITE_DESCRIPTION,
+  openGraph: {
+    type: "website",
+    locale: "fr_SN",
+    url: SITE_URL,
+    siteName: SITE_NAME,
+    title: SITE_NAME,
+    description: SITE_DESCRIPTION,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: SITE_NAME,
+    description: SITE_DESCRIPTION,
+  },
 };
 
 export default function RootLayout({

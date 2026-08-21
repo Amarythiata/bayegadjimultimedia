@@ -1,5 +1,7 @@
+import { cache } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import type { ArticleRow } from "@/lib/types/database";
 
@@ -12,7 +14,9 @@ const categoryLabels: Record<ArticleRow["category"], string> = {
   enseignements: "Enseignements",
 };
 
-async function getArticleBySlug(slug: string) {
+// `cache` évite d'interroger deux fois la base : generateMetadata et la
+// page demandent la même entrée.
+const getArticleBySlug = cache(async (slug: string) => {
   const supabase = await createClient();
   const { data } = await supabase
     .from("articles")
@@ -21,6 +25,34 @@ async function getArticleBySlug(slug: string) {
     .maybeSingle();
 
   return data;
+});
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const item = await getArticleBySlug(slug);
+  if (!item) return {};
+
+  const images = item.cover_image_url ? [item.cover_image_url] : undefined;
+  return {
+    title: item.title,
+    description: item.excerpt,
+    openGraph: {
+      type: "article",
+      title: item.title,
+      description: item.excerpt,
+      images,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: item.title,
+      description: item.excerpt,
+      images,
+    },
+  };
 }
 
 export default async function ArticleDetailPage({

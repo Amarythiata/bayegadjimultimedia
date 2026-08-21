@@ -1,5 +1,7 @@
+import { cache } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import { ShareButton } from "@/components/ui/share-button";
 import type { MediaRow } from "@/lib/types/database";
@@ -12,7 +14,9 @@ const categoryLabels: Record<MediaRow["category"], string> = {
   autre: "Autre",
 };
 
-async function getMediaBySlug(slug: string) {
+// `cache` évite d'interroger deux fois la base : generateMetadata et la page
+// elle-même demandent le même média.
+const getMediaBySlug = cache(async (slug: string) => {
   const supabase = await createClient();
   const { data } = await supabase
     .from("medias")
@@ -21,6 +25,35 @@ async function getMediaBySlug(slug: string) {
     .maybeSingle();
 
   return data;
+});
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const media = await getMediaBySlug(slug);
+  if (!media) return {};
+
+  return {
+    title: media.title,
+    description: media.description,
+    openGraph: {
+      type: "video.other",
+      title: media.title,
+      description: media.description,
+      // Vignette propre au média : partager une vidéo doit montrer cette
+      // vidéo, pas l'image générique du site.
+      images: media.cover_image_url ? [media.cover_image_url] : undefined,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: media.title,
+      description: media.description,
+      images: media.cover_image_url ? [media.cover_image_url] : undefined,
+    },
+  };
 }
 
 export default async function MediaDetailPage({
