@@ -4,7 +4,7 @@ import { BookOpen, CalendarDays, Info, Mail, ChevronRight } from "lucide-react";
 const links = [
   { href: "/articles", label: "Articles", description: "Textes sur l'islam en général", icon: BookOpen },
   { href: "/calendrier", label: "Calendrier", description: "Les prochains directs et causeries", icon: CalendarDays },
-  { href: "/a-propos", label: "À propos", description: "Le dahira Ansaroudine Linguère", icon: Info },
+  { href: "/a-propos", label: "À propos", description: "Le dahira Ansaroudine de Linguère", icon: Info },
   { href: "/contact", label: "Contact", description: "Une question, une suggestion ?", icon: Mail },
 ];
 

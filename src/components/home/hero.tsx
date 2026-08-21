@@ -86,7 +86,7 @@ export function Hero({ live }: { live: LiveEventRow | null }) {
           className="inline-flex items-center gap-2 rounded-full border border-forest-100/15 bg-white/5 px-4 py-1.5 text-xs font-medium text-forest-100 backdrop-blur-sm"
         >
           <span className="h-1.5 w-1.5 rounded-full bg-gold-400" />
-          Plateforme officielle du dahira Ansaroudine Linguère
+          Plateforme officielle du dahira Ansaroudine de Linguère
         </motion.div>
 
         <motion.h1
