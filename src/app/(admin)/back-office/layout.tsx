@@ -35,14 +35,16 @@ export default async function BackOfficeLayout({
     .eq("is_read", false);
 
   return (
-    <div className="mx-auto flex max-w-6xl flex-col md:min-h-[calc(100vh-3.5rem)] md:flex-row">
-      <aside className="flex shrink-0 flex-col justify-between border-b border-forest-900/40 bg-forest-800 px-3 py-4 md:w-56 md:border-b-0 md:border-r md:py-6">
+    // Pas de conteneur centré ici : la barre latérale doit toucher le bord
+    // gauche de l'écran. C'est le contenu seul qui est borné en largeur.
+    <div className="flex flex-col md:min-h-[calc(100vh-3.5rem)] md:flex-row">
+      <aside className="flex shrink-0 flex-col justify-between border-b border-forest-900/40 bg-forest-800 px-3 py-4 md:sticky md:top-0 md:h-[calc(100vh-3.5rem)] md:w-60 md:border-b-0 md:border-r md:px-4 md:py-6">
         <nav className="flex gap-1 overflow-x-auto md:flex-col md:overflow-visible">
           {navItems.map(({ href, label, icon: Icon }) => (
             <Link
               key={href}
               href={href}
-              className="flex shrink-0 items-center gap-2 rounded-lg px-3 py-2 text-sm text-forest-100 hover:bg-forest-600/50"
+              className="flex shrink-0 items-center gap-2 rounded-lg px-3 py-2 text-sm text-forest-100 transition-colors hover:bg-forest-600/50"
             >
               <Icon size={17} />
               {label}
@@ -61,7 +63,7 @@ export default async function BackOfficeLayout({
           <form action={signOut}>
             <button
               type="submit"
-              className="mt-3 flex items-center gap-2 text-xs text-forest-100 hover:text-gold-100"
+              className="mt-3 flex items-center gap-2 text-xs text-forest-100 transition-colors hover:text-gold-100"
             >
               <LogOut size={14} />
               Se déconnecter
@@ -70,7 +72,9 @@ export default async function BackOfficeLayout({
         </div>
       </aside>
 
-      <main className="flex-1 px-4 py-4 md:px-8 md:py-8">{children}</main>
+      <main className="min-w-0 flex-1 px-4 py-4 md:px-8 md:py-8">
+        <div className="mx-auto max-w-5xl">{children}</div>
+      </main>
     </div>
   );
 }
