@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { BookOpen, CalendarDays, Info, Mail, LogIn, ChevronRight } from "lucide-react";
+import { BookOpen, CalendarDays, Info, Mail, ChevronRight } from "lucide-react";
 
 const links = [
   { href: "/articles", label: "Articles", description: "Textes sur l'islam en général", icon: BookOpen },
@@ -27,14 +27,6 @@ export default function PlusPage() {
           </Link>
         ))}
       </div>
-
-      <Link
-        href="/connexion"
-        className="mt-6 flex items-center gap-2 px-2 text-sm text-forest-400 hover:text-forest-600"
-      >
-        <LogIn size={15} />
-        Connexion back-office
-      </Link>
     </div>
   );
 }
