@@ -3,10 +3,16 @@
 import { useState } from "react";
 import { Video, Radio } from "lucide-react";
 import type { LiveEventRow } from "@/lib/types/database";
+import { YOUTUBE_LIVE_EMBED_URL } from "@/lib/youtube";
 
 export function LivePlayer({ live }: { live: LiveEventRow }) {
   const [mode, setMode] = useState<"video" | "radio">(live.live_type);
-  const canToggle = Boolean(live.video_embed_url) && Boolean(live.radio_stream_url);
+
+  // Repli sur la chaîne YouTube et le flux AzuraCast permanents : un direct
+  // planifié sans URL explicite reste diffusable.
+  const videoUrl = live.video_embed_url || YOUTUBE_LIVE_EMBED_URL;
+  const radioUrl = live.radio_stream_url || process.env.NEXT_PUBLIC_RADIO_STREAM_URL;
+  const canToggle = Boolean(videoUrl) && Boolean(radioUrl);
 
   return (
     <div className="mt-4">
@@ -35,30 +41,24 @@ export function LivePlayer({ live }: { live: LiveEventRow }) {
       )}
 
       {mode === "video" ? (
-        live.video_embed_url ? (
-          <div className="aspect-video overflow-hidden rounded-xl">
-            <iframe
-              src={live.video_embed_url}
-              className="h-full w-full"
-              allow="autoplay; encrypted-media; picture-in-picture"
-              allowFullScreen
-              title={live.title}
-            />
-          </div>
-        ) : (
-          <div className="flex aspect-video items-center justify-center rounded-xl bg-forest-900 text-sm text-forest-100">
-            Flux vidéo à configurer (URL embed YouTube/Facebook Live)
-          </div>
-        )
-      ) : live.radio_stream_url ? (
+        <div className="aspect-video overflow-hidden rounded-xl">
+          <iframe
+            src={videoUrl}
+            className="h-full w-full"
+            allow="autoplay; encrypted-media; picture-in-picture"
+            allowFullScreen
+            title={live.title}
+          />
+        </div>
+      ) : radioUrl ? (
         <div className="rounded-xl bg-forest-900 p-5 text-white">
-          <audio controls autoPlay className="w-full" src={live.radio_stream_url}>
+          <audio controls autoPlay className="w-full" src={radioUrl}>
             Votre navigateur ne supporte pas la lecture audio.
           </audio>
         </div>
       ) : (
         <div className="flex items-center justify-center rounded-xl bg-forest-900 p-10 text-sm text-forest-100">
-          Flux radio à configurer (URL Icecast / AzuraCast)
+          Flux radio momentanément indisponible.
         </div>
       )}
     </div>
