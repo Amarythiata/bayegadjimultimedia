@@ -15,6 +15,16 @@ const SITE_NAME = "Ansaroudine Linguère";
 const SITE_DESCRIPTION =
   "Directs vidéo et radio, actualités, médiathèque et articles du dahira Ansaroudine de Linguère — où que vous soyez dans le monde.";
 
+// Image déclarée explicitement plutôt que via la convention `opengraph-image` :
+// celle-ci ajoute une chaîne de requête imitant un nom de fichier, que le robot
+// de WhatsApp tolère mal. Servie depuis /public, l'URL reste simple.
+const OG_IMAGE = {
+  url: "/og.jpg",
+  width: 1200,
+  height: 630,
+  alt: "Ansaroudine Linguère — plateforme du dahira",
+};
+
 export const metadata: Metadata = {
   // Indispensable pour que les images d'aperçu soient servies en URL absolue :
   // WhatsApp et Facebook rejettent les chemins relatifs.
@@ -33,11 +43,13 @@ export const metadata: Metadata = {
     siteName: SITE_NAME,
     title: SITE_NAME,
     description: SITE_DESCRIPTION,
+    images: [OG_IMAGE],
   },
   twitter: {
     card: "summary_large_image",
     title: SITE_NAME,
     description: SITE_DESCRIPTION,
+    images: [OG_IMAGE.url],
   },
 };
 
