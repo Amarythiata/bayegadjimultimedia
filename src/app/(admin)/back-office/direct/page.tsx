@@ -1,6 +1,9 @@
 import Link from "next/link";
 import { Plus } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
+import { formatEventDateTime } from "@/lib/dates";
+import { setLiveStatus } from "./actions";
+import { LiveStatusButton } from "./live-status-button";
 
 const statusLabels: Record<string, string> = {
   a_venir: "À venir",
@@ -41,20 +44,26 @@ export default async function DirectBackOfficePage() {
               <div className="min-w-0">
                 <p className="truncate text-sm font-medium text-forest-900">{live.title}</p>
                 <p className="text-xs text-forest-400">
-                  {new Date(live.scheduled_start).toLocaleString("fr-FR", {
-                    dateStyle: "medium",
-                    timeStyle: "short",
-                  })}{" "}
-                  · {live.live_type === "video" ? "Vidéo" : "Radio"} ·{" "}
+                  {/* Heure de Dakar, comme sur le site public : c'est d'après
+                      elle qu'on décide du moment de passer en direct. */}
+                  {formatEventDateTime(live.scheduled_start)} ·{" "}
+                  {live.live_type === "video" ? "Vidéo" : "Radio"} ·{" "}
                   <span className={statusStyles[live.status]}>{statusLabels[live.status]}</span>
                 </p>
               </div>
-              <Link
-                href={`/back-office/direct/${live.id}`}
-                className="shrink-0 text-xs text-forest-600 hover:text-forest-900"
-              >
-                Modifier
-              </Link>
+              <div className="flex shrink-0 items-center gap-3">
+                <LiveStatusButton
+                  status={live.status}
+                  goLive={setLiveStatus.bind(null, live.id, "en_cours")}
+                  endLive={setLiveStatus.bind(null, live.id, "termine")}
+                />
+                <Link
+                  href={`/back-office/direct/${live.id}`}
+                  className="text-xs text-forest-600 hover:text-forest-900"
+                >
+                  Modifier
+                </Link>
+              </div>
             </div>
           ))
         ) : (

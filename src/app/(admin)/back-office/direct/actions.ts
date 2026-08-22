@@ -55,6 +55,49 @@ export async function createLiveEvent(_prevState: string | undefined, formData: 
   redirect("/back-office/direct");
 }
 
+/**
+ * Bascule le statut d'un direct depuis la liste, sans passer par le formulaire.
+ *
+ * Le statut n'évolue jamais tout seul : le compte à rebours peut atteindre
+ * zéro sans que rien ne se passe. C'est ce geste-là qui fait apparaître le
+ * lecteur sur `/direct`, il doit donc être à un clic.
+ */
+export async function setLiveStatus(
+  id: string,
+  status: LiveStatus,
+  _prevState: string | undefined,
+  _formData: FormData,
+): Promise<string | undefined> {
+  const supabase = await createClient();
+
+  // Deux directs simultanés en « en cours » rendraient indéterminé celui que
+  // le site affiche : on clôt les autres avant d'ouvrir celui-ci.
+  if (status === "en_cours") {
+    await supabase
+      .from("live_events")
+      .update({ status: "termine", ended_at: new Date().toISOString() })
+      .eq("status", "en_cours")
+      .neq("id", id);
+  }
+
+  const { error } = await supabase
+    .from("live_events")
+    .update({
+      status,
+      ended_at: status === "termine" ? new Date().toISOString() : null,
+    })
+    .eq("id", id);
+
+  if (error) {
+    return "Impossible de changer le statut de ce direct.";
+  }
+
+  revalidatePath("/back-office/direct");
+  revalidatePath("/direct");
+  revalidatePath("/");
+  return undefined;
+}
+
 export async function updateLiveEvent(
   id: string,
   _prevState: string | undefined,
