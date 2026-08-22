@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { notifyNewContactMessage } from "@/lib/notify-contact";
 
 export type ContactFormState = { ok: boolean; message: string } | undefined;
 
@@ -25,6 +26,11 @@ export async function sendContactMessage(
   if (error) {
     return { ok: false, message: "Impossible d'envoyer le message, réessaie plus tard." };
   }
+
+  // Notification après l'enregistrement : la base fait foi, l'email n'est
+  // qu'une alerte. Un échec d'envoi ne doit pas perdre le message ni afficher
+  // une erreur au visiteur.
+  await notifyNewContactMessage({ name, email, message });
 
   return { ok: true, message: "Message envoyé — on te répond au plus vite." };
 }
