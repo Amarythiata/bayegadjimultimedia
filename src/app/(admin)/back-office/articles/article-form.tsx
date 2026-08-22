@@ -2,15 +2,7 @@
 
 import { useActionState } from "react";
 import type { ArticleRow } from "@/lib/types/database";
-
-const categories: { value: ArticleRow["category"]; label: string }[] = [
-  { value: "croyance", label: "Croyance" },
-  { value: "jurisprudence", label: "Jurisprudence" },
-  { value: "spiritualite", label: "Spiritualité" },
-  { value: "histoire", label: "Histoire" },
-  { value: "biographie", label: "Biographie" },
-  { value: "enseignements", label: "Enseignements" },
-];
+import { ARTICLE_CATEGORIES as categories } from "@/lib/article-categories";
 
 type Action = (prevState: string | undefined, formData: FormData) => Promise<string | undefined>;
 

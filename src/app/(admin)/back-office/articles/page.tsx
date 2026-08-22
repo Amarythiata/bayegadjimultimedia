@@ -2,16 +2,8 @@ import Link from "next/link";
 import { Plus } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { getSessionProfile } from "@/lib/auth";
+import { articleCategoryLabels as categoryLabels } from "@/lib/article-categories";
 import { deleteArticle } from "./actions";
-
-const categoryLabels: Record<string, string> = {
-  croyance: "Croyance",
-  jurisprudence: "Jurisprudence",
-  spiritualite: "Spiritualité",
-  histoire: "Histoire",
-  biographie: "Biographie",
-  enseignements: "Enseignements",
-};
 
 export default async function ArticlesBackOfficePage() {
   const supabase = await createClient();

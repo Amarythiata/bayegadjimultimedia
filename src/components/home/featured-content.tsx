@@ -4,21 +4,13 @@ import Link from "next/link";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { Reveal } from "./reveal";
 import type { ArticleRow, NewsRow } from "@/lib/types/database";
+import { articleCategoryLabels } from "@/lib/article-categories";
 
 const newsCategoryLabels: Record<NewsRow["category"], string> = {
   annonces: "Annonces",
   evenements: "Événements",
   communiques: "Communiqués",
   vie_du_dahira: "Vie du dahira",
-};
-
-const articleCategoryLabels: Record<ArticleRow["category"], string> = {
-  croyance: "Croyance",
-  jurisprudence: "Jurisprudence",
-  spiritualite: "Spiritualité",
-  histoire: "Histoire",
-  biographie: "Biographie",
-  enseignements: "Enseignements",
 };
 
 function formatShortDate(iso: string | null) {

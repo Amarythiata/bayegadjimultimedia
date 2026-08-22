@@ -350,6 +350,7 @@ export type Database = {
         | "histoire"
         | "biographie"
         | "enseignements"
+        | "zikr"
       live_status: "a_venir" | "en_cours" | "termine"
       live_type: "video" | "radio"
       media_category: "gamou" | "causerie" | "cours" | "conference" | "autre"
@@ -490,6 +491,7 @@ export const Constants = {
         "histoire",
         "biographie",
         "enseignements",
+        "zikr",
       ],
       live_status: ["a_venir", "en_cours", "termine"],
       live_type: ["video", "radio"],

@@ -1,14 +1,6 @@
 import Link from "next/link";
 import type { ArticleRow } from "@/lib/types/database";
-
-const categoryLabels: Record<ArticleRow["category"], string> = {
-  croyance: "Croyance",
-  jurisprudence: "Jurisprudence",
-  spiritualite: "Spiritualité",
-  histoire: "Histoire",
-  biographie: "Biographie",
-  enseignements: "Enseignements",
-};
+import { articleCategoryLabels as categoryLabels } from "@/lib/article-categories";
 
 export function ArticleCard({ article }: { article: ArticleRow }) {
   const date = article.published_at

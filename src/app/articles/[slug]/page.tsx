@@ -3,16 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
-import type { ArticleRow } from "@/lib/types/database";
-
-const categoryLabels: Record<ArticleRow["category"], string> = {
-  croyance: "Croyance",
-  jurisprudence: "Jurisprudence",
-  spiritualite: "Spiritualité",
-  histoire: "Histoire",
-  biographie: "Biographie",
-  enseignements: "Enseignements",
-};
+import { articleCategoryLabels as categoryLabels } from "@/lib/article-categories";
 
 // `cache` évite d'interroger deux fois la base : generateMetadata et la
 // page demandent la même entrée.

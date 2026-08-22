@@ -1,15 +1,11 @@
 import { createClient } from "@/lib/supabase/server";
 import { ArticleCard } from "@/components/ui/article-card";
 import type { ArticleCategory, ArticleRow } from "@/lib/types/database";
+import { ARTICLE_CATEGORIES } from "@/lib/article-categories";
 
 const categories: { value: ArticleCategory | "toutes"; label: string }[] = [
   { value: "toutes", label: "Toutes" },
-  { value: "croyance", label: "Croyance" },
-  { value: "jurisprudence", label: "Jurisprudence" },
-  { value: "spiritualite", label: "Spiritualité" },
-  { value: "histoire", label: "Histoire" },
-  { value: "biographie", label: "Biographie" },
-  { value: "enseignements", label: "Enseignements" },
+  ...ARTICLE_CATEGORIES,
 ];
 
 async function getArticles(category?: string, search?: string): Promise<ArticleRow[]> {
@@ -47,7 +43,8 @@ export default async function ArticlesPage({
     <div className="mx-auto max-w-6xl px-4 py-4 md:px-6 md:py-8">
       <h1 className="text-lg font-medium text-forest-900 md:text-xl">Articles</h1>
       <p className="mt-1 text-sm text-forest-400">
-        Textes sur l&apos;islam en général — croyance, jurisprudence, spiritualité, histoire.
+        Textes sur l&apos;islam en général — croyance, jurisprudence, spiritualité, histoire —
+        et les textes de zikr récités au dahira.
       </p>
 
       <form className="mt-4 flex gap-2" action="/articles">
