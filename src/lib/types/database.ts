@@ -202,6 +202,7 @@ export type Database = {
           cover_image_url: string | null
           created_at: string
           description: string
+          duration_minutes: number | null
           id: string
           media_type: Database["public"]["Enums"]["live_type"]
           media_url: string
@@ -217,6 +218,7 @@ export type Database = {
           cover_image_url?: string | null
           created_at?: string
           description: string
+          duration_minutes?: number | null
           id?: string
           media_type?: Database["public"]["Enums"]["live_type"]
           media_url: string
@@ -232,6 +234,7 @@ export type Database = {
           cover_image_url?: string | null
           created_at?: string
           description?: string
+          duration_minutes?: number | null
           id?: string
           media_type?: Database["public"]["Enums"]["live_type"]
           media_url?: string

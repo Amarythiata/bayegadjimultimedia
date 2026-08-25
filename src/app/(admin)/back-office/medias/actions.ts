@@ -13,6 +13,9 @@ function readMediaForm(formData: FormData) {
   const description = String(formData.get("description") ?? "").trim();
   const mediaType = String(formData.get("media_type") ?? "video") as LiveType;
   const rawUrl = String(formData.get("media_url") ?? "").trim();
+  // Champ facultatif : vide ou non numérique, la carte n'affiche pas de durée.
+  const rawDuration = Number(formData.get("duration_minutes"));
+  const durationMinutes = Number.isFinite(rawDuration) && rawDuration > 0 ? rawDuration : null;
   const coverImageUrl = String(formData.get("cover_image_url") ?? "").trim();
   const category = String(formData.get("category") ?? "") as MediaCategory;
   const status = String(formData.get("status") ?? "brouillon") as PublicationStatus;
@@ -28,6 +31,7 @@ function readMediaForm(formData: FormData) {
     description,
     media_type: mediaType,
     media_url: mediaUrl,
+    duration_minutes: durationMinutes,
     // À défaut de vignette fournie, on reprend celle de YouTube plutôt que
     // d'afficher un simple aplat de couleur dans la médiathèque.
     cover_image_url: coverImageUrl || youTubeThumbnail(rawUrl),

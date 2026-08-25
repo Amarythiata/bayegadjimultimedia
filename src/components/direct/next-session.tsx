@@ -1,6 +1,6 @@
 "use client";
 
-import { CalendarPlus } from "lucide-react";
+import { Bell } from "lucide-react";
 import { LiveCountdown } from "@/components/live/live-countdown";
 import { ShareButton } from "@/components/ui/share-button";
 import { formatEventDate, formatEventTime } from "@/lib/dates";
@@ -55,36 +55,47 @@ export function NextSession({ event }: { event: LiveEventRow }) {
   };
 
   return (
-    <div className="rounded-2xl border border-white/10 bg-white/5 p-5 backdrop-blur-sm">
-      <p className="inline-flex items-center gap-1.5 text-xs font-medium text-gold-400">
-        Prochaine session
-      </p>
+    <section className="rounded-2xl border border-border-subtle bg-card-bg p-5 md:p-6">
+      <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
+        <div className="min-w-0">
+          <span className="inline-flex items-center rounded-full bg-gold-100 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide text-gold-800">
+            Prochaine session
+          </span>
+          <h2 className="mt-2.5 text-xl font-semibold text-forest-900 md:text-2xl">
+            {event.title}
+          </h2>
+          <p className="mt-1 text-sm text-gold-600">
+            <span className="capitalize">{formatEventDate(event.scheduled_start)}</span> à{" "}
+            {formatEventTime(event.scheduled_start)}
+            <span className="text-forest-400"> (heure de Dakar)</span>
+          </p>
+          {event.description && (
+            <p className="mt-2 text-sm leading-relaxed text-forest-400">{event.description}</p>
+          )}
+        </div>
 
-      <h2 className="mt-2 text-lg font-semibold text-white">{event.title}</h2>
-
-      <p className="mt-1 text-sm text-forest-100/70">
-        <span className="capitalize">{formatEventDate(event.scheduled_start)}</span> à{" "}
-        {formatEventTime(event.scheduled_start)}
-        <span className="text-forest-100/50"> (heure de Dakar)</span>
-      </p>
-
-      <LiveCountdown scheduledStart={event.scheduled_start} tone="dark" />
-
-      {/* Un rappel dans l'agenda du visiteur vaut mieux qu'une promesse de
-          notification que le site ne peut pas tenir : aucun envoi n'est
-          possible sans compte ni autorisation navigateur. */}
-      <button
-        type="button"
-        onClick={addToCalendar}
-        className="mt-4 flex w-full items-center justify-center gap-2 rounded-full bg-gold-400 px-4 py-2.5 text-sm font-medium text-forest-900 transition-opacity hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-400"
-      >
-        <CalendarPlus size={16} />
-        Ajouter à mon agenda
-      </button>
-
-      <div className="mt-4 border-t border-white/10 pt-4">
-        <ShareButton tone="dark" title={`${event.title} — retransmission en direct`} />
+        <div className="shrink-0 md:w-80">
+          <LiveCountdown scheduledStart={event.scheduled_start} />
+        </div>
       </div>
-    </div>
+
+      {/* Le site n'a ni comptes ni notifications : le rappel passe par
+          l'agenda du visiteur, avec une alerte trente minutes avant. */}
+      <div className="mt-5 flex flex-col items-start gap-3 border-t border-border-subtle pt-5 sm:flex-row sm:items-center sm:justify-end">
+        <p className="text-sm text-forest-400">Recevez un rappel avant le début</p>
+        <button
+          type="button"
+          onClick={addToCalendar}
+          className="inline-flex items-center gap-2 rounded-full bg-forest-900 px-4 py-2.5 text-sm font-medium text-white transition-opacity hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-forest-600"
+        >
+          <Bell size={15} />
+          Ajouter à mon agenda
+        </button>
+      </div>
+
+      <div className="mt-4 border-t border-border-subtle pt-4">
+        <ShareButton title={`${event.title} — retransmission en direct`} />
+      </div>
+    </section>
   );
 }

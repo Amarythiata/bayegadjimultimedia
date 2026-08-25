@@ -114,6 +114,20 @@ export function MediaForm({ media, action }: { media?: MediaRow; action: Action 
       </label>
 
       <label className="text-sm text-forest-800">
+        Durée en minutes (optionnel)
+        <input
+          type="number"
+          name="duration_minutes"
+          min={1}
+          defaultValue={media?.duration_minutes ?? ""}
+          className="mt-1 w-full rounded-lg border border-border-subtle bg-card-bg px-3 py-2 text-sm"
+        />
+        <span className="mt-1 block text-xs font-normal text-forest-400">
+          Affichée sur la carte de la médiathèque. 105 s&apos;affiche « 1 h 45 ».
+        </span>
+      </label>
+
+      <label className="text-sm text-forest-800">
         Statut
         <select
           name="status"

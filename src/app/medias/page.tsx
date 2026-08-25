@@ -1,8 +1,20 @@
+import Link from "next/link";
+import type { Metadata } from "next";
+import { Headphones, LayoutGrid } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { MediaCard } from "@/components/ui/media-card";
+import { PageHero } from "@/components/ui/page-hero";
+import { BrowseBar } from "@/components/ui/browse-bar";
+import { Pagination } from "@/components/ui/pagination";
 import type { MediaCategory, MediaRow } from "@/lib/types/database";
 
-const categories: { value: MediaCategory | "toutes"; label: string }[] = [
+export const metadata: Metadata = {
+  title: "Médiathèque",
+  description:
+    "Tous les replays vidéo et audio du dahira Ansaroudine de Linguère : Gamou, causeries, cours et conférences.",
+};
+
+const categories = [
   { value: "toutes", label: "Toutes" },
   { value: "gamou", label: "Gamou" },
   { value: "causerie", label: "Causerie" },
@@ -11,77 +23,108 @@ const categories: { value: MediaCategory | "toutes"; label: string }[] = [
   { value: "autre", label: "Autre" },
 ];
 
-async function getMedias(category?: string, search?: string): Promise<MediaRow[]> {
+const PER_PAGE = 9;
+
+async function getMedias(
+  category: string,
+  search: string | undefined,
+  page: number,
+): Promise<{ items: MediaRow[]; total: number }> {
   try {
     const supabase = await createClient();
     let query = supabase
       .from("medias")
-      .select("*")
+      .select("*", { count: "exact" })
       .eq("status", "publie")
       .order("published_at", { ascending: false });
 
-    if (category && category !== "toutes") {
+    if (category !== "toutes") {
       query = query.eq("category", category as MediaCategory);
     }
     if (search) {
       query = query.ilike("title", `%${search}%`);
     }
 
-    const { data } = await query;
-    return data ?? [];
+    const from = (page - 1) * PER_PAGE;
+    const { data, count } = await query.range(from, from + PER_PAGE - 1);
+    return { items: data ?? [], total: count ?? 0 };
   } catch {
-    return [];
+    return { items: [], total: 0 };
   }
 }
 
 export default async function MediasPage({
   searchParams,
 }: {
-  searchParams: Promise<{ categorie?: string; q?: string }>;
+  searchParams: Promise<{ categorie?: string; q?: string; page?: string }>;
 }) {
-  const { categorie = "toutes", q } = await searchParams;
-  const medias = await getMedias(categorie, q);
+  const { categorie = "toutes", q, page: rawPage } = await searchParams;
+  const page = Math.max(1, Number(rawPage) || 1);
+  const { items, total } = await getMedias(categorie, q, page);
+  const totalPages = Math.ceil(total / PER_PAGE);
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-4 md:px-6 md:py-8">
-      <h1 className="text-lg font-medium text-forest-900 md:text-xl">Médiathèque</h1>
-      <p className="mt-1 text-sm text-forest-400">
-        Replays vidéo et audio des directs passés — Gamou, causeries, cours, conférences.
-      </p>
+    <div>
+      <PageHero
+        eyebrow="Médiathèque"
+        title="Médiathèque"
+        subtitle="Accédez à tous nos replays vidéo et audio : Gamou, causeries, cours, conférences et plus encore."
+        icon={Headphones}
+        angle={105}
+      />
 
-      <form className="mt-4 flex gap-2" action="/medias">
-        <input type="hidden" name="categorie" value={categorie} />
-        <input
-          type="search"
-          name="q"
-          defaultValue={q}
+      <div className="mx-auto max-w-6xl px-4 py-6 md:px-6 md:py-10">
+        <BrowseBar
+          basePath="/medias"
           placeholder="Rechercher dans la médiathèque…"
-          className="w-full rounded-full border border-border-subtle bg-card-bg px-4 py-2 text-sm"
+          categories={categories}
+          active={categorie}
+          query={q}
         />
-      </form>
 
-      <div className="mt-3 flex gap-2 overflow-x-auto pb-1">
-        {categories.map((c) => (
-          <a
-            key={c.value}
-            href={`/medias?categorie=${c.value}${q ? `&q=${q}` : ""}`}
-            className={`shrink-0 rounded-full border px-3 py-1.5 text-xs ${
-              categorie === c.value
-                ? "border-forest-800 bg-forest-800 text-white"
-                : "border-border-subtle text-forest-600"
-            }`}
-          >
-            {c.label}
-          </a>
-        ))}
-      </div>
-
-      <div className="mt-4 grid gap-3 md:grid-cols-2">
-        {medias.length > 0 ? (
-          medias.map((m) => <MediaCard key={m.id} media={m} />)
+        {items.length > 0 ? (
+          <>
+            <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {items.map((m) => (
+                <MediaCard key={m.id} media={m} />
+              ))}
+            </div>
+            <Pagination
+              page={page}
+              totalPages={totalPages}
+              basePath="/medias"
+              params={{ categorie: categorie === "toutes" ? undefined : categorie, q }}
+            />
+          </>
         ) : (
-          <p className="text-sm text-forest-400">Aucun média pour le moment.</p>
+          <p className="mt-10 text-center text-sm text-forest-400">
+            Aucun média ne correspond à cette recherche.
+          </p>
         )}
+
+        {/* Sortie de secours : un visiteur qui ne trouve rien doit pouvoir
+            repartir de la liste complète plutôt que d'affiner à l'aveugle. */}
+        <div className="mt-10 flex flex-col items-start justify-between gap-4 rounded-2xl border border-border-subtle bg-card-bg p-5 sm:flex-row sm:items-center">
+          <div className="flex items-center gap-3">
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-forest-50 text-forest-600">
+              <LayoutGrid size={18} />
+            </span>
+            <div>
+              <p className="text-sm font-medium text-forest-900">
+                Vous ne trouvez pas ce que vous cherchez ?
+              </p>
+              <p className="mt-0.5 text-xs text-forest-400">
+                Parcourez l&apos;ensemble des enregistrements, toutes catégories confondues.
+              </p>
+            </div>
+          </div>
+          <Link
+            href="/medias"
+            className="shrink-0 rounded-full bg-gold-400 px-4 py-2 text-sm font-medium text-forest-900 transition-opacity hover:opacity-90"
+          >
+            Voir toute la médiathèque
+          </Link>
+        </div>
       </div>
     </div>
   );

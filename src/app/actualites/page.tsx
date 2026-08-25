@@ -1,8 +1,19 @@
+import type { Metadata } from "next";
+import { Newspaper } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { NewsCard } from "@/components/ui/news-card";
+import { PageHero } from "@/components/ui/page-hero";
+import { BrowseBar } from "@/components/ui/browse-bar";
+import { Pagination } from "@/components/ui/pagination";
 import type { NewsCategory, NewsRow } from "@/lib/types/database";
 
-const categories: { value: NewsCategory | "toutes"; label: string }[] = [
+export const metadata: Metadata = {
+  title: "Actualités",
+  description:
+    "Les derniers événements, annonces et informations du dahira Ansaroudine de Linguère.",
+};
+
+const categories = [
   { value: "toutes", label: "Toutes" },
   { value: "annonces", label: "Annonces" },
   { value: "evenements", label: "Événements" },
@@ -10,74 +21,84 @@ const categories: { value: NewsCategory | "toutes"; label: string }[] = [
   { value: "vie_du_dahira", label: "Vie du dahira" },
 ];
 
-async function getNews(category?: string, search?: string): Promise<NewsRow[]> {
+const PER_PAGE = 8;
+
+async function getNews(
+  category: string,
+  search: string | undefined,
+  page: number,
+): Promise<{ items: NewsRow[]; total: number }> {
   try {
     const supabase = await createClient();
     let query = supabase
       .from("news")
-      .select("*")
+      // `count: exact` en une seule requête : une seconde requête pour compter
+      // doublerait les allers-retours à chaque changement de page.
+      .select("*", { count: "exact" })
       .eq("status", "publie")
       .order("published_at", { ascending: false });
 
-    if (category && category !== "toutes") {
+    if (category !== "toutes") {
       query = query.eq("category", category as NewsCategory);
     }
     if (search) {
       query = query.ilike("title", `%${search}%`);
     }
 
-    const { data } = await query;
-    return data ?? [];
+    const from = (page - 1) * PER_PAGE;
+    const { data, count } = await query.range(from, from + PER_PAGE - 1);
+    return { items: data ?? [], total: count ?? 0 };
   } catch {
-    return [];
+    return { items: [], total: 0 };
   }
 }
 
 export default async function ActualitesPage({
   searchParams,
 }: {
-  searchParams: Promise<{ categorie?: string; q?: string }>;
+  searchParams: Promise<{ categorie?: string; q?: string; page?: string }>;
 }) {
-  const { categorie = "toutes", q } = await searchParams;
-  const news = await getNews(categorie, q);
+  const { categorie = "toutes", q, page: rawPage } = await searchParams;
+  const page = Math.max(1, Number(rawPage) || 1);
+  const { items, total } = await getNews(categorie, q, page);
+  const totalPages = Math.ceil(total / PER_PAGE);
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-4 md:px-6 md:py-8">
-      <h1 className="text-lg font-medium text-forest-900 md:text-xl">Actualités</h1>
+    <div>
+      <PageHero
+        eyebrow="Actualités"
+        title="Actualités"
+        subtitle="Restez informé des derniers événements, annonces et informations de la communauté."
+        icon={Newspaper}
+        angle={125}
+      />
 
-      <form className="mt-4 flex gap-2" action="/actualites">
-        <input type="hidden" name="categorie" value={categorie} />
-        <input
-          type="search"
-          name="q"
-          defaultValue={q}
+      <div className="mx-auto max-w-6xl px-4 py-6 md:px-6 md:py-10">
+        <BrowseBar
+          basePath="/actualites"
           placeholder="Rechercher une actualité…"
-          className="w-full rounded-full border border-border-subtle bg-card-bg px-4 py-2 text-sm"
+          categories={categories}
+          active={categorie}
+          query={q}
         />
-      </form>
 
-      <div className="mt-3 flex gap-2 overflow-x-auto pb-1">
-        {categories.map((c) => (
-          <a
-            key={c.value}
-            href={`/actualites?categorie=${c.value}${q ? `&q=${q}` : ""}`}
-            className={`shrink-0 rounded-full border px-3 py-1.5 text-xs ${
-              categorie === c.value
-                ? "border-forest-800 bg-forest-800 text-white"
-                : "border-border-subtle text-forest-600"
-            }`}
-          >
-            {c.label}
-          </a>
-        ))}
-      </div>
-
-      <div className="mt-4 grid gap-3 md:grid-cols-2">
-        {news.length > 0 ? (
-          news.map((n) => <NewsCard key={n.id} news={n} />)
+        {items.length > 0 ? (
+          <>
+            <div className="mt-6 grid gap-4 md:grid-cols-2">
+              {items.map((n) => (
+                <NewsCard key={n.id} news={n} />
+              ))}
+            </div>
+            <Pagination
+              page={page}
+              totalPages={totalPages}
+              basePath="/actualites"
+              params={{ categorie: categorie === "toutes" ? undefined : categorie, q }}
+            />
+          </>
         ) : (
-          <p className="text-sm text-forest-400">
-            Aucune actualité pour le moment — connectez Supabase pour voir les données réelles.
+          <p className="mt-10 text-center text-sm text-forest-400">
+            Aucune actualité ne correspond à cette recherche.
           </p>
         )}
       </div>
