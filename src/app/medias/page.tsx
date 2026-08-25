@@ -23,7 +23,9 @@ const categories = [
   { value: "autre", label: "Autre" },
 ];
 
-const PER_PAGE = 9;
+// Six par page plutôt que neuf : en une colonne sur mobile, neuf vignettes
+// 16:9 font près de 2 700 px à faire défiler avant d'atteindre le bas.
+const PER_PAGE = 6;
 
 async function getMedias(
   category: string,
