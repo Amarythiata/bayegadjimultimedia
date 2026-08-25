@@ -1,84 +1,100 @@
+import type { Metadata } from "next";
+import { BookOpen } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { ArticleCard } from "@/components/ui/article-card";
+import { PageHero } from "@/components/ui/page-hero";
+import { BrowseBar } from "@/components/ui/browse-bar";
+import { Pagination } from "@/components/ui/pagination";
 import type { ArticleCategory, ArticleRow } from "@/lib/types/database";
 import { ARTICLE_CATEGORIES } from "@/lib/article-categories";
 
-const categories: { value: ArticleCategory | "toutes"; label: string }[] = [
-  { value: "toutes", label: "Toutes" },
-  ...ARTICLE_CATEGORIES,
-];
+export const metadata: Metadata = {
+  title: "Articles",
+  description:
+    "Textes sur l'islam en général — croyance, jurisprudence, spiritualité, histoire — et les textes de zikr récités au dahira Ansaroudine de Linguère.",
+};
 
-async function getArticles(category?: string, search?: string): Promise<ArticleRow[]> {
+const categories = [{ value: "toutes", label: "Toutes" }, ...ARTICLE_CATEGORIES];
+
+const PER_PAGE = 8;
+
+async function getArticles(
+  category: string,
+  search: string | undefined,
+  page: number,
+): Promise<{ items: ArticleRow[]; total: number }> {
   try {
     const supabase = await createClient();
     let query = supabase
       .from("articles")
-      .select("*")
+      // `count: exact` en une seule requête : une seconde requête pour compter
+      // doublerait les allers-retours à chaque changement de page.
+      .select("*", { count: "exact" })
       .eq("status", "publie")
       .order("published_at", { ascending: false });
 
-    if (category && category !== "toutes") {
+    if (category !== "toutes") {
       query = query.eq("category", category as ArticleCategory);
     }
     if (search) {
       query = query.ilike("title", `%${search}%`);
     }
 
-    const { data } = await query;
-    return data ?? [];
+    const from = (page - 1) * PER_PAGE;
+    const { data, count } = await query.range(from, from + PER_PAGE - 1);
+    return { items: data ?? [], total: count ?? 0 };
   } catch {
-    return [];
+    return { items: [], total: 0 };
   }
 }
 
 export default async function ArticlesPage({
   searchParams,
 }: {
-  searchParams: Promise<{ categorie?: string; q?: string }>;
+  searchParams: Promise<{ categorie?: string; q?: string; page?: string }>;
 }) {
-  const { categorie = "toutes", q } = await searchParams;
-  const articles = await getArticles(categorie, q);
+  const { categorie = "toutes", q, page: rawPage } = await searchParams;
+  const page = Math.max(1, Number(rawPage) || 1);
+  const { items, total } = await getArticles(categorie, q, page);
+  const totalPages = Math.ceil(total / PER_PAGE);
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-4 md:px-6 md:py-8">
-      <h1 className="text-lg font-medium text-forest-900 md:text-xl">Articles</h1>
-      <p className="mt-1 text-sm text-forest-400">
-        Textes sur l&apos;islam en général — croyance, jurisprudence, spiritualité, histoire —
-        et les textes de zikr récités au dahira.
-      </p>
+    <div>
+      <PageHero
+        eyebrow="Articles"
+        title="Articles"
+        subtitle="Textes sur l'islam en général — croyance, jurisprudence, spiritualité, histoire — et les textes de zikr récités au dahira."
+        icon={BookOpen}
+        angle={135}
+      />
 
-      <form className="mt-4 flex gap-2" action="/articles">
-        <input type="hidden" name="categorie" value={categorie} />
-        <input
-          type="search"
-          name="q"
-          defaultValue={q}
+      <div className="mx-auto max-w-6xl px-4 py-6 md:px-6 md:py-10">
+        <BrowseBar
+          basePath="/articles"
           placeholder="Rechercher un article…"
-          className="w-full rounded-full border border-border-subtle bg-card-bg px-4 py-2 text-sm"
+          categories={categories}
+          active={categorie}
+          query={q}
         />
-      </form>
 
-      <div className="mt-3 flex gap-2 overflow-x-auto pb-1">
-        {categories.map((c) => (
-          <a
-            key={c.value}
-            href={`/articles?categorie=${c.value}${q ? `&q=${q}` : ""}`}
-            className={`shrink-0 rounded-full border px-3 py-1.5 text-xs ${
-              categorie === c.value
-                ? "border-forest-800 bg-forest-800 text-white"
-                : "border-border-subtle text-forest-600"
-            }`}
-          >
-            {c.label}
-          </a>
-        ))}
-      </div>
-
-      <div className="mt-4 grid gap-3 md:grid-cols-2">
-        {articles.length > 0 ? (
-          articles.map((a) => <ArticleCard key={a.id} article={a} />)
+        {items.length > 0 ? (
+          <>
+            <div className="mt-6 grid gap-4 md:grid-cols-2">
+              {items.map((a) => (
+                <ArticleCard key={a.id} article={a} />
+              ))}
+            </div>
+            <Pagination
+              page={page}
+              totalPages={totalPages}
+              basePath="/articles"
+              params={{ categorie: categorie === "toutes" ? undefined : categorie, q }}
+            />
+          </>
         ) : (
-          <p className="text-sm text-forest-400">Aucun article pour le moment.</p>
+          <p className="mt-10 text-center text-sm text-forest-400">
+            Aucun article ne correspond à cette recherche.
+          </p>
         )}
       </div>
     </div>

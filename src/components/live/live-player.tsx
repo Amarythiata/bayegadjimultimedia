@@ -25,11 +25,11 @@ export function LivePlayer({
   return (
     <div className="mt-4">
       {canToggle && (
-        <div className="mb-3 inline-flex rounded-full border border-border-subtle bg-card-bg p-1">
+        <div className="mb-3 inline-flex rounded-full border border-white/10 bg-white/5 p-1">
           <button
             onClick={() => setMode("video")}
             className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs ${
-              mode === "video" ? "bg-forest-900 text-white" : "text-forest-600 hover:text-forest-900"
+              mode === "video" ? "bg-gold-400 text-forest-900" : "text-forest-100/70 hover:text-white"
             }`}
           >
             <Video size={14} /> Vidéo
@@ -37,11 +37,11 @@ export function LivePlayer({
           <button
             onClick={() => setMode("radio")}
             className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs ${
-              mode === "radio" ? "bg-forest-900 text-white" : "text-forest-600 hover:text-forest-900"
+              mode === "radio" ? "bg-gold-400 text-forest-900" : "text-forest-100/70 hover:text-white"
             }`}
           >
             <Radio size={14} /> Radio
-            <span className="hidden rounded bg-gold-100 px-1 text-[10px] text-gold-800 sm:inline">
+            <span className="hidden rounded bg-white/10 px-1 text-[10px] sm:inline">
               faible bande passante
             </span>
           </button>
@@ -62,13 +62,13 @@ export function LivePlayer({
           />
         </div>
       ) : radioUrl ? (
-        <div className="rounded-xl bg-forest-900 p-5 text-white">
+        <div className="rounded-xl border border-white/10 bg-white/5 p-5 text-white">
           <audio controls autoPlay className="w-full" src={radioUrl}>
             Votre navigateur ne supporte pas la lecture audio.
           </audio>
         </div>
       ) : (
-        <div className="flex items-center justify-center rounded-xl bg-forest-900 p-10 text-sm text-forest-100">
+        <div className="flex items-center justify-center rounded-xl border border-white/10 bg-white/5 p-10 text-sm text-forest-100/70">
           Flux radio momentanément indisponible.
         </div>
       )}
