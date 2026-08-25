@@ -14,16 +14,22 @@ export function BrowseBar({
   categories,
   active,
   query,
+  // Le calendrier filtre par état (à venir, passé) et non par catégorie :
+  // le nom du paramètre doit refléter ce qu'il désigne dans l'URL.
+  paramName = "categorie",
+  allValue = "toutes",
 }: {
   basePath: string;
   placeholder: string;
   categories: { value: string; label: string }[];
   active: string;
   query?: string;
+  paramName?: string;
+  allValue?: string;
 }) {
   const href = (category: string) => {
     const search = new URLSearchParams();
-    if (category !== "toutes") search.set("categorie", category);
+    if (category !== allValue) search.set(paramName, category);
     if (query) search.set("q", query);
     const qs = search.toString();
     return qs ? `${basePath}?${qs}` : basePath;
@@ -32,7 +38,7 @@ export function BrowseBar({
   return (
     <div className="flex flex-col gap-3">
       <form action={basePath} className="relative">
-        {active !== "toutes" && <input type="hidden" name="categorie" value={active} />}
+        {active !== allValue && <input type="hidden" name={paramName} value={active} />}
         <Search
           size={16}
           aria-hidden
