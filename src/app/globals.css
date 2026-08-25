@@ -26,6 +26,19 @@
 
   --card-bg: #ffffff;
   --border-subtle: #e4e0d4;
+
+  /* Page radio — univers sombre, dérogation assumée au fond crème.
+     L'écoute se fait souvent le soir et en plein écran : un fond profond
+     met le lecteur en avant là où le crème le noierait. Ces jetons ne
+     servent qu'à /radio, le reste du site garde l'identité claire. */
+  --radio-950: #06110a;
+  --radio-900: #0a1a11;
+  --radio-800: #10261a;
+  --radio-line: #1d3a28;
+  --radio-100: #e8f2ea;
+  --radio-400: #8ba396;
+  --signal-400: #22c55e;
+  --signal-600: #16a34a;
 }
 
 @theme inline {
@@ -45,6 +58,14 @@
   --color-live-600: var(--live-600);
   --color-card-bg: var(--card-bg);
   --color-border-subtle: var(--border-subtle);
+  --color-radio-950: var(--radio-950);
+  --color-radio-900: var(--radio-900);
+  --color-radio-800: var(--radio-800);
+  --color-radio-line: var(--radio-line);
+  --color-radio-100: var(--radio-100);
+  --color-radio-400: var(--radio-400);
+  --color-signal-400: var(--signal-400);
+  --color-signal-600: var(--signal-600);
   --font-sans: var(--font-inter);
 }
 
@@ -52,4 +73,15 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+}
+
+/* Barres d'égaliseur de la page radio — décoratives, arrêtées si le visiteur
+   a demandé moins de mouvement. */
+@keyframes radio-bar {
+  from { transform: scaleY(0.35); }
+  to   { transform: scaleY(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [style*="radio-bar"] { animation: none !important; }
 }
