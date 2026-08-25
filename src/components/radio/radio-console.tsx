@@ -111,10 +111,12 @@ export function RadioConsole() {
                 <Music size={20} />
               </div>
               <div className="min-w-0">
-                <p className="truncate text-sm font-semibold tracking-wide text-signal-400">
-                  RADIO ANSAROUDINE
+                {/* Pas de troncature : sur mobile le nom de la station se
+                    réduisait à « RADIO ANSAROUDINE … », illisible. */}
+                <p className="text-sm font-semibold leading-snug tracking-wide text-signal-400">
+                  RADIO ANSAROUDINE DE LINGUÈRE
                 </p>
-                <p className="truncate text-xs text-radio-400">
+                <p className="mt-0.5 text-xs leading-snug text-radio-400">
                   Écoute en direct{quality ? ` · ${quality}` : ""}
                 </p>
               </div>
@@ -256,7 +258,7 @@ export function RadioConsole() {
             </motion.ul>
           )}
 
-          <ShareButton tone="dark" title="Radio Ansaroudine — écoute en direct" />
+          <ShareButton tone="dark" title="Radio Ansaroudine de Linguère — écoute en direct" />
         </div>
       </motion.div>
 

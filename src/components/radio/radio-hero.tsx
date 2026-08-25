@@ -87,7 +87,7 @@ export function RadioHero() {
           {...rise(0.08)}
           className="mt-4 text-4xl font-semibold tracking-tight text-white md:text-6xl"
         >
-          Radio <span className="text-signal-400">Ansaroudine</span>
+          Radio <span className="text-signal-400">Ansaroudine de Linguère</span>
         </motion.h1>
 
         <motion.p
