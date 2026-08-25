@@ -1,11 +1,19 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { Video, Radio } from "lucide-react";
 import type { LiveEventRow } from "@/lib/types/database";
 import { YOUTUBE_LIVE_EMBED_URL } from "@/lib/youtube";
 
-export function LivePlayer({ live }: { live: LiveEventRow }) {
+export function LivePlayer({
+  live,
+  overlay,
+}: {
+  live: LiveEventRow;
+  // Rendu *dans* le cadre vidéo. Placer un badge par-dessus le composant
+  // entier le ferait atterrir sur le sélecteur Vidéo/Radio, pas sur l'image.
+  overlay?: ReactNode;
+}) {
   const [mode, setMode] = useState<"video" | "radio">(live.live_type);
 
   // Repli sur la chaîne YouTube et le flux AzuraCast permanents : un direct
@@ -17,11 +25,11 @@ export function LivePlayer({ live }: { live: LiveEventRow }) {
   return (
     <div className="mt-4">
       {canToggle && (
-        <div className="mb-3 inline-flex rounded-full border border-border-subtle p-1">
+        <div className="mb-3 inline-flex rounded-full border border-white/10 bg-white/5 p-1">
           <button
             onClick={() => setMode("video")}
             className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs ${
-              mode === "video" ? "bg-forest-800 text-white" : "text-forest-600"
+              mode === "video" ? "bg-gold-400 text-forest-900" : "text-forest-100/70 hover:text-white"
             }`}
           >
             <Video size={14} /> Vidéo
@@ -29,11 +37,11 @@ export function LivePlayer({ live }: { live: LiveEventRow }) {
           <button
             onClick={() => setMode("radio")}
             className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs ${
-              mode === "radio" ? "bg-forest-800 text-white" : "text-forest-600"
+              mode === "radio" ? "bg-gold-400 text-forest-900" : "text-forest-100/70 hover:text-white"
             }`}
           >
             <Radio size={14} /> Radio
-            <span className="rounded bg-gold-100 px-1 text-[10px] text-gold-800">
+            <span className="hidden rounded bg-white/10 px-1 text-[10px] sm:inline">
               faible bande passante
             </span>
           </button>
@@ -41,7 +49,10 @@ export function LivePlayer({ live }: { live: LiveEventRow }) {
       )}
 
       {mode === "video" ? (
-        <div className="aspect-video overflow-hidden rounded-xl">
+        <div className="relative aspect-video overflow-hidden rounded-xl">
+          {overlay && (
+            <div className="pointer-events-none absolute left-3 top-3 z-10">{overlay}</div>
+          )}
           <iframe
             src={videoUrl}
             className="h-full w-full"
@@ -51,13 +62,13 @@ export function LivePlayer({ live }: { live: LiveEventRow }) {
           />
         </div>
       ) : radioUrl ? (
-        <div className="rounded-xl bg-forest-900 p-5 text-white">
+        <div className="rounded-xl border border-white/10 bg-white/5 p-5 text-white">
           <audio controls autoPlay className="w-full" src={radioUrl}>
             Votre navigateur ne supporte pas la lecture audio.
           </audio>
         </div>
       ) : (
-        <div className="flex items-center justify-center rounded-xl bg-forest-900 p-10 text-sm text-forest-100">
+        <div className="flex items-center justify-center rounded-xl border border-white/10 bg-white/5 p-10 text-sm text-forest-100/70">
           Flux radio momentanément indisponible.
         </div>
       )}

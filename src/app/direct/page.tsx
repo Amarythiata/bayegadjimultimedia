@@ -1,14 +1,19 @@
 import Link from "next/link";
-import { CalendarDays, MonitorPlay, Radio as RadioIcon, PlaySquare, Bell } from "lucide-react";
+import type { Metadata } from "next";
+import { CalendarDays } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
-import { LiveBadge } from "@/components/ui/live-badge";
-import { LivePlayer } from "@/components/live/live-player";
 import { LiveChat } from "@/components/live/live-chat";
-import { LiveCountdown } from "@/components/live/live-countdown";
-import { ShareButton } from "@/components/ui/share-button";
-import { YOUTUBE_LIVE_STREAMS_URL } from "@/lib/youtube";
-import { formatEventDate, formatEventTime } from "@/lib/dates";
+import { LiveStage, WaitingStage, EmptyStage } from "@/components/direct/live-stage";
+import { NextSession } from "@/components/direct/next-session";
+import { FollowGuide } from "@/components/direct/follow-guide";
+import { QuickActions } from "@/components/direct/quick-actions";
 import type { LiveEventRow } from "@/lib/types/database";
+
+export const metadata: Metadata = {
+  title: "Direct",
+  description:
+    "Suivez en direct les enseignements, conférences et moments forts du dahira Ansaroudine de Linguère.",
+};
 
 async function getLiveState(): Promise<{
   current: LiveEventRow | null;
@@ -38,162 +43,69 @@ async function getLiveState(): Promise<{
   }
 }
 
-
-/** Comment suivre une retransmission — affiché quand aucun direct n'est en cours. */
-function AccessSteps() {
-  const steps = [
-    {
-      icon: Bell,
-      title: "Sur cette page",
-      text: "Le lecteur s'affiche automatiquement dès le début de la retransmission. Aucune inscription n'est nécessaire.",
-    },
-    {
-      icon: RadioIcon,
-      title: "En radio",
-      text: "La radio du dahira diffuse en continu, y compris pendant les directs. Elle consomme beaucoup moins de données que la vidéo.",
-    },
-    {
-      icon: MonitorPlay,
-      title: "Sur YouTube",
-      text: "Les directs sont également retransmis sur la chaîne officielle, où vous pouvez activer les notifications.",
-    },
-    {
-      icon: PlaySquare,
-      title: "En différé",
-      text: "Les enregistrements des sessions passées sont disponibles dans la médiathèque.",
-    },
-  ];
-
-  return (
-    <div className="mt-8">
-      <h2 className="text-sm font-medium text-forest-900">Comment suivre nos directs</h2>
-      <div className="mt-3 grid gap-3 sm:grid-cols-2">
-        {steps.map(({ icon: Icon, title, text }) => (
-          <div
-            key={title}
-            className="rounded-xl border border-border-subtle bg-card-bg p-4"
-          >
-            <div className="flex items-center gap-2">
-              <Icon size={16} className="text-gold-600" />
-              <p className="text-sm font-medium text-forest-900">{title}</p>
-            </div>
-            <p className="mt-1.5 text-sm leading-relaxed text-forest-400">{text}</p>
-          </div>
-        ))}
-      </div>
-
-      <div className="mt-4 flex flex-wrap gap-3">
-        <Link
-          href="/radio"
-          className="inline-flex items-center gap-2 rounded-full bg-gold-400 px-4 py-2 text-sm font-medium text-forest-900"
-        >
-          <RadioIcon size={15} />
-          Écouter la radio
-        </Link>
-        <a
-          href={YOUTUBE_LIVE_STREAMS_URL}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 rounded-full border border-border-subtle px-4 py-2 text-sm font-medium text-forest-600 hover:text-forest-900"
-        >
-          <MonitorPlay size={15} />
-          Voir la chaîne YouTube
-        </a>
-        <Link
-          href="/medias"
-          className="inline-flex items-center gap-2 rounded-full border border-border-subtle px-4 py-2 text-sm font-medium text-forest-600 hover:text-forest-900"
-        >
-          <PlaySquare size={15} />
-          Médiathèque
-        </Link>
-      </div>
-    </div>
-  );
-}
-
 export default async function DirectPage() {
   const { current, next } = await getLiveState();
 
-  // --- Un direct est en cours ---
-  if (current) {
-    return (
-      <div className="mx-auto max-w-6xl px-4 py-4 md:px-6 md:py-8">
-        <div className="grid gap-6 md:grid-cols-[1fr_320px]">
-          <div>
-            <LiveBadge viewerCount={current.viewer_count} />
-            <h1 className="mt-3 text-xl font-medium text-forest-900">{current.title}</h1>
-            {current.description && (
-              <p className="mt-1 text-sm text-forest-400">{current.description}</p>
-            )}
-            <LivePlayer live={current} />
+  return (
+    // Univers sombre : une page de retransmission se regarde, et un fond crème
+    // autour d'une vidéo fatigue l'œil. La palette reste celle du site —
+    // vert forêt et or — contrairement à /radio qui a sa propre teinte.
+    <div className="min-h-screen bg-forest-900">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-0 h-96 opacity-70"
+        style={{
+          background: "radial-gradient(60% 100% at 50% 0%, #123726 0%, transparent 100%)",
+        }}
+      />
 
-            <div className="mt-4">
-              <ShareButton title={`En direct : ${current.title}`} />
-            </div>
+      <div className="relative mx-auto max-w-6xl px-4 py-6 md:px-6 md:py-10">
+        <div className="grid gap-5 lg:grid-cols-[1fr_22rem]">
+          {/* Colonne principale — ce que le visiteur vient voir */}
+          <div className="flex flex-col gap-5">
+            {current ? (
+              <LiveStage event={current} />
+            ) : next ? (
+              <WaitingStage event={next} />
+            ) : (
+              <EmptyStage />
+            )}
+
+            <QuickActions />
           </div>
 
-          <aside className="flex flex-col rounded-2xl border border-border-subtle bg-card-bg">
-            <LiveChat liveEventId={current.id} disabled={false} />
+          {/* Colonne latérale — le chat pendant le direct, sinon le rendez-vous
+              à venir : c'est l'information utile à chacun de ces moments. */}
+          <aside className="flex flex-col gap-4">
+            {current ? (
+              <div className="flex h-[26rem] flex-col rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm">
+                <LiveChat liveEventId={current.id} tone="dark" />
+              </div>
+            ) : next ? (
+              <NextSession event={next} />
+            ) : (
+              <Link
+                href="/calendrier"
+                className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 p-5 backdrop-blur-sm transition-colors hover:border-gold-400/40"
+              >
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gold-400/15 text-gold-400">
+                  <CalendarDays size={17} />
+                </span>
+                <span>
+                  <span className="block text-sm font-medium text-white">
+                    Consulter le calendrier
+                  </span>
+                  <span className="block text-xs text-forest-100/60">
+                    Les prochains rendez-vous du dahira
+                  </span>
+                </span>
+              </Link>
+            )}
+
+            <FollowGuide />
           </aside>
         </div>
       </div>
-    );
-  }
-
-  // --- Aucun direct en cours ---
-  return (
-    <div className="mx-auto max-w-4xl px-4 py-4 md:px-6 md:py-8">
-      <h1 className="text-lg font-medium text-forest-900 md:text-xl">Direct</h1>
-
-      {next ? (
-        <div className="mt-4 rounded-2xl border border-border-subtle bg-card-bg p-6 md:p-8">
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-gold-100 px-2.5 py-1 text-xs font-medium text-gold-800">
-            <CalendarDays size={13} />
-            Prochaine session
-          </span>
-
-          <h2 className="mt-3 text-lg font-medium text-forest-900 md:text-xl">{next.title}</h2>
-          {next.description && (
-            <p className="mt-1 text-sm text-forest-400">{next.description}</p>
-          )}
-
-          <p className="mt-3 text-sm text-forest-800">
-            <span className="capitalize">{formatEventDate(next.scheduled_start)}</span> à{" "}
-            {formatEventTime(next.scheduled_start)}
-            <span className="text-forest-400"> (heure de Dakar)</span>
-          </p>
-
-          <LiveCountdown scheduledStart={next.scheduled_start} />
-
-          {/* Annoncer une session à venir est le moment le plus utile pour
-              partager : c'est ainsi qu'on rassemble une audience. */}
-          <div className="mt-5">
-            <ShareButton title={`${next.title} — retransmission en direct`} />
-          </div>
-        </div>
-      ) : (
-        <div className="mt-4 rounded-2xl border border-border-subtle bg-card-bg p-6 text-center md:p-10">
-          <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-forest-50">
-            <CalendarDays size={22} className="text-forest-400" />
-          </span>
-          <p className="mt-4 text-base font-medium text-forest-900">
-            Aucune retransmission en cours
-          </p>
-          <p className="mx-auto mt-1 max-w-md text-sm leading-relaxed text-forest-400">
-            Aucune session n&apos;est programmée pour le moment. La radio, elle, diffuse en
-            continu — et les enregistrements précédents restent disponibles.
-          </p>
-          <Link
-            href="/calendrier"
-            className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-gold-600 hover:text-gold-800"
-          >
-            <CalendarDays size={15} />
-            Consulter le calendrier
-          </Link>
-        </div>
-      )}
-
-      <AccessSteps />
     </div>
   );
 }

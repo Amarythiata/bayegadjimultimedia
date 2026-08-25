@@ -34,9 +34,29 @@ function getServerSnapshot(): null {
   return null;
 }
 
-export function LiveCountdown({ scheduledStart }: { scheduledStart: string }) {
+const tones = {
+  light: {
+    cell: "rounded-xl border border-border-subtle bg-card-bg",
+    value: "text-forest-900",
+    label: "text-forest-400",
+  },
+  dark: {
+    cell: "rounded-xl border border-white/10 bg-white/5",
+    value: "text-white",
+    label: "text-forest-100/60",
+  },
+};
+
+export function LiveCountdown({
+  scheduledStart,
+  tone = "light",
+}: {
+  scheduledStart: string;
+  tone?: keyof typeof tones;
+}) {
   const nowSeconds = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
   const remaining = nowSeconds === null ? null : getRemaining(scheduledStart, nowSeconds * 1000);
+  const style = tones[tone];
 
   const units = [
     { value: remaining?.days, label: "jours" },
@@ -45,14 +65,16 @@ export function LiveCountdown({ scheduledStart }: { scheduledStart: string }) {
     { value: remaining?.seconds, label: "sec" },
   ];
 
+  // Chaque unité dans sa propre case : sur la maquette du direct le compte à
+  // rebours doit rester lisible en colonne étroite, où un seul bloc se serre.
   return (
-    <div className="mt-4 flex gap-3 rounded-xl border border-border-subtle bg-card-bg p-4">
+    <div className="mt-4 grid grid-cols-4 gap-2">
       {units.map((u) => (
-        <div key={u.label} className="flex-1 text-center">
-          <p className="text-2xl font-medium tabular-nums text-forest-900">
+        <div key={u.label} className={`${style.cell} px-1 py-3 text-center`}>
+          <p className={`text-xl font-semibold tabular-nums md:text-2xl ${style.value}`}>
             {u.value === undefined ? "--" : String(u.value).padStart(2, "0")}
           </p>
-          <p className="text-[11px] text-forest-400">{u.label}</p>
+          <p className={`mt-0.5 text-[11px] ${style.label}`}>{u.label}</p>
         </div>
       ))}
     </div>

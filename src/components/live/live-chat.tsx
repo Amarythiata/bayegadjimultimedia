@@ -5,12 +5,34 @@ import { Send } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import type { ChatMessageRow } from "@/lib/types/database";
 
+const tones = {
+  light: {
+    header: "border-b border-border-subtle text-forest-900",
+    empty: "text-forest-400",
+    author: "text-forest-800",
+    body: "text-forest-600",
+    form: "border-t border-border-subtle",
+    input: "border border-border-subtle bg-background",
+  },
+  dark: {
+    header: "border-b border-white/10 text-white",
+    empty: "text-forest-100/50",
+    author: "text-white",
+    body: "text-forest-100/80",
+    form: "border-t border-white/10",
+    input: "border border-white/10 bg-white/5 text-white placeholder:text-forest-100/40",
+  },
+};
+
+/** `tone` adapte le chat au fond : la page /direct est sombre, le reste clair. */
 export function LiveChat({
   liveEventId,
   disabled,
+  tone = "light",
 }: {
   liveEventId: string;
   disabled?: boolean;
+  tone?: keyof typeof tones;
 }) {
   const [messages, setMessages] = useState<ChatMessageRow[]>([]);
   const [draft, setDraft] = useState("");
@@ -67,14 +89,16 @@ export function LiveChat({
     setDraft("");
   }
 
+  const style = tones[tone];
+
   return (
     <div className="flex h-full flex-col">
-      <p className="border-b border-border-subtle p-3 text-sm font-medium text-forest-900">
+      <p className={`p-3 text-sm font-medium ${style.header}`}>
         Chat en direct
       </p>
       <div className="flex-1 space-y-2 overflow-y-auto p-3">
         {messages.length === 0 && (
-          <p className="text-xs text-forest-400">
+          <p className={`text-xs ${style.empty}`}>
             {disabled
               ? "Le chat s'ouvre pendant le direct."
               : "Soyez le premier à poser une question."}
@@ -82,19 +106,19 @@ export function LiveChat({
         )}
         {messages.map((m) => (
           <div key={m.id} className="text-sm">
-            <span className="font-medium text-forest-800">{m.author_display_name}</span>{" "}
-            <span className="text-forest-600">{m.content}</span>
+            <span className={`font-medium ${style.author}`}>{m.author_display_name}</span>{" "}
+            <span className={style.body}>{m.content}</span>
           </div>
         ))}
         <div ref={bottomRef} />
       </div>
-      <form onSubmit={sendMessage} className="flex gap-2 border-t border-border-subtle p-3">
+      <form onSubmit={sendMessage} className={`flex gap-2 p-3 ${style.form}`}>
         <input
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
           disabled={disabled}
           placeholder={disabled ? "Chat fermé" : "Votre question…"}
-          className="flex-1 rounded-full border border-border-subtle bg-background px-3 py-1.5 text-sm disabled:opacity-50"
+          className={`flex-1 rounded-full px-3 py-1.5 text-sm disabled:opacity-50 ${style.input}`}
         />
         <button
           type="submit"
